@@ -1,0 +1,50 @@
+name: Bug report
+description: Report a reproducible diagnostic, build, or link problem
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Remove serial numbers, MAC addresses, hostnames, usernames, credentials,
+        signing material, and unrelated network configuration before submitting.
+  - type: input
+    id: kernel
+    attributes:
+      label: Linux kernel release
+      placeholder: 6.x.y-distribution
+    validations:
+      required: true
+  - type: input
+    id: mac
+    attributes:
+      label: Mac family and macOS version
+      placeholder: Apple Silicon Mac, macOS version
+    validations:
+      required: true
+  - type: input
+    id: usb
+    attributes:
+      label: Apple VID:PID and negotiated speed
+      placeholder: 05ac:1905 at 10000M
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour and redacted diagnostics
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: I removed secrets, private keys, serial numbers, MAC addresses, hostnames, and private-environment data.
+          required: true

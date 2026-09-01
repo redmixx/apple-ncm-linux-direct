@@ -1,0 +1,23 @@
+# Kernel build output
+build/
+*.ko
+*.o
+*.mod
+*.mod.c
+*.mod.o
+*.cmd
+Module.symvers
+modules.order
+
+# Signing material: never commit private keys
+MOK.priv
+*.priv
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Local/editor output
+.DS_Store
+*.swp
+*.tmp

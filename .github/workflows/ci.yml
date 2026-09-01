@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install ShellCheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - name: Verify repository
+        run: ./scripts/verify-repo.sh
+      - name: Exercise read-only help paths
+        run: |
+          ./scripts/diagnose.sh
+          ./scripts/check-kernel-support.sh --help
+          ./scripts/build-cdc-ncm.sh --help
+          ./scripts/check-module.sh --help
+          ./scripts/configure-link-linux.sh --help
+          ./scripts/test-link.sh --help
+          ./scripts/rollback.sh --help
