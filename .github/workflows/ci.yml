@@ -35,13 +35,15 @@ jobs:
           # modinfo stage on this bash (no 'bad substitution').
           { grep -q "REASON: modinfo could not inspect" <<<"$out" &&
             ! grep -qi "bad substitution" <<<"$out"; } || exit 1
-          if ./scripts/rollback.sh --interface does-not-exist0 --linux-address 10.55.0.2/30 --apply 2>err.log; then
-            echo "FAIL: non-root --apply unexpectedly succeeded"; exit 1
-          fi
-          case "$?" in
+          set +e
+          ./scripts/rollback.sh --interface does-not-exist0 --linux-address 10.55.0.2/30 --apply 2>err.log
+          rc=$?
+          set -e
+          case "$rc" in
+            0) echo "FAIL: --apply unexpectedly succeeded"; exit 1 ;;
             77) echo "root gate hit (exit 77); interface guard verified locally on bash 3.2" ;;
             65) grep -q "does not exist" err.log ;;
-            *) echo "FAIL: unexpected rollback exit"; cat err.log; exit 1 ;;
+            *) echo "FAIL: unexpected rollback exit $rc"; cat err.log; exit 1 ;;
           esac
           if ./scripts/configure-link-linux.sh --interface -la --linux-address 10.55.0.2/30 2>/dev/null; then
             echo "FAIL: unsafe interface name accepted"
