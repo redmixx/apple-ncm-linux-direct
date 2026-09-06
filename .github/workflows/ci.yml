@@ -26,3 +26,16 @@ jobs:
           ./scripts/configure-link-linux.sh --help
           ./scripts/test-link.sh --help
           ./scripts/rollback.sh --help
+      - name: Exercise argument paths
+        run: |
+          out=$(./scripts/check-kernel-support.sh --product 1905 || true)
+          echo "$out"
+          echo "$out" | grep -q "APPLE DEVICE: 05ac:1905"
+          if ./scripts/rollback.sh --interface does-not-exist0 --linux-address 10.55.0.2/30 --apply 2>err.log; then
+            echo "FAIL: missing interface accepted"; exit 1
+          fi
+          grep -q "does not exist" err.log
+          if ./scripts/configure-link-linux.sh --interface -la --linux-address 10.55.0.2/30 2>/dev/null; then
+            echo "FAIL: unsafe interface name accepted"
+            exit 1
+          fi

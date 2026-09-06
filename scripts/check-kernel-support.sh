@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -u
 
+upper() { printf '%s' "$1" | tr '[:lower:]' '[:upper:]'; }
+
 usage() {
   cat <<'EOF'
 Usage: check-kernel-support.sh [--module MODULE_OR_PATH] [--product 1905|1902]
@@ -22,7 +24,7 @@ while (($#)); do
       ;;
     --product)
       [[ $# -ge 2 ]] || { echo "ERROR: --product requires a value" >&2; exit 64; }
-      product=${2,,}
+      product=$(printf '%s' "$2" | tr '[:upper:]' '[:lower:]')
       shift 2
       ;;
     -h|--help)
@@ -70,8 +72,8 @@ fi
 printf 'MODULE: %s\n' "$module"
 printf 'KERNEL: %s\n' "$(uname -r)"
 printf 'APPLE DEVICE: 05ac:%s\n' "$product"
-printf 'INTERFACE 0 ALIAS: %s\n' "${if0^^}"
-printf 'INTERFACE 2 ALIAS: %s\n' "${if2^^}"
+printf 'INTERFACE 0 ALIAS: %s\n' "$(upper "$if0")"
+printf 'INTERFACE 2 ALIAS: %s\n' "$(upper "$if2")"
 
 if $if0 && $if2; then
   echo "CDC_NCM SUPPORT: PRESENT"
