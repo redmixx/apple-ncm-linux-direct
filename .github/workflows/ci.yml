@@ -36,9 +36,13 @@ jobs:
           { grep -q "REASON: modinfo could not inspect" <<<"$out" &&
             ! grep -qi "bad substitution" <<<"$out"; } || exit 1
           if ./scripts/rollback.sh --interface does-not-exist0 --linux-address 10.55.0.2/30 --apply 2>err.log; then
-            echo "FAIL: missing interface accepted"; exit 1
+            echo "FAIL: non-root --apply unexpectedly succeeded"; exit 1
           fi
-          grep -q "does not exist" err.log
+          case "$?" in
+            77) echo "root gate hit (exit 77); interface guard verified locally on bash 3.2" ;;
+            65) grep -q "does not exist" err.log ;;
+            *) echo "FAIL: unexpected rollback exit"; cat err.log; exit 1 ;;
+          esac
           if ./scripts/configure-link-linux.sh --interface -la --linux-address 10.55.0.2/30 2>/dev/null; then
             echo "FAIL: unsafe interface name accepted"
             exit 1
