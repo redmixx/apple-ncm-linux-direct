@@ -25,7 +25,7 @@ while (($#)); do
 done
 
 [[ -n $interface && -n $linux_address ]] || { usage >&2; exit 64; }
-[[ $interface =~ ^[[:alnum:]_.:-]+$ ]] || { echo "ERROR: unsafe interface name" >&2; exit 64; }
+[[ $interface =~ ^[[:alnum:]_][[:alnum:]_.:-]*$ ]] || { echo "ERROR: unsafe interface name" >&2; exit 64; }
 [[ $linux_address =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}/[0-9]{1,2}$ ]] || { echo "ERROR: invalid IPv4 CIDR" >&2; exit 64; }
 command -v ip >/dev/null 2>&1 || { echo "ERROR: ip is not installed" >&2; exit 69; }
 
@@ -40,5 +40,13 @@ if ! $apply; then
 fi
 
 [[ $EUID -eq 0 ]] || { echo "ERROR: --apply requires root" >&2; exit 77; }
+if ! ip link show dev "$interface" >/dev/null 2>&1; then
+  echo "ERROR: interface $interface does not exist" >&2
+  exit 65
+fi
+if ! ip -o addr show dev "$interface" | grep -Eqw -- "$linux_address"; then
+  echo "NOTHING TO REMOVE: $linux_address is not configured on $interface"
+  exit 0
+fi
 ip address del "$linux_address" dev "$interface"
 echo "Removed $linux_address from $interface"

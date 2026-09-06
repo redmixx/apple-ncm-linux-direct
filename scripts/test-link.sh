@@ -25,7 +25,7 @@ while (($#)); do
 done
 
 [[ -n $interface && -n $peer ]] || { usage >&2; exit 64; }
-[[ $interface =~ ^[[:alnum:]_.:-]+$ ]] || { echo "ERROR: unsafe interface name" >&2; exit 64; }
+[[ $interface =~ ^[[:alnum:]_][[:alnum:]_.:-]*$ ]] || { echo "ERROR: unsafe interface name" >&2; exit 64; }
 [[ $peer =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] || { echo "ERROR: invalid peer IPv4" >&2; exit 64; }
 [[ $duration =~ ^[1-9][0-9]*$ ]] || { echo "ERROR: duration must be a positive integer" >&2; exit 64; }
 

@@ -32,7 +32,7 @@ while (($#)); do
 done
 
 [[ -n $interface ]] || { echo "ERROR: --interface is required" >&2; exit 64; }
-[[ $interface =~ ^[[:alnum:]_.:-]+$ ]] || { echo "ERROR: unsafe interface name" >&2; exit 64; }
+[[ $interface =~ ^[[:alnum:]_][[:alnum:]_.:-]*$ ]] || { echo "ERROR: unsafe interface name" >&2; exit 64; }
 [[ $linux_address =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}/[0-9]{1,2}$ ]] || { echo "ERROR: invalid IPv4 CIDR" >&2; exit 64; }
 [[ $peer_address =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] || { echo "ERROR: invalid peer IPv4" >&2; exit 64; }
 command -v ip >/dev/null 2>&1 || { echo "ERROR: ip is not installed" >&2; exit 69; }
