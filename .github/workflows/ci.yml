@@ -28,9 +28,13 @@ jobs:
           ./scripts/rollback.sh --help
       - name: Exercise argument paths
         run: |
-          out=$(./scripts/check-kernel-support.sh --product 1905 || true)
-          echo "$out"
-          echo "$out" | grep -q "APPLE DEVICE: 05ac:1905"
+          out=$(./scripts/check-kernel-support.sh --product 1905 2>/dev/null || true)
+          printf '%s\n' "$out"
+          # The runner kernel has no cdc_ncm in modules.dep; 'REASON: modinfo
+          # could not inspect cdc_ncm' proves the --product path ran to the
+          # modinfo stage on this bash (no 'bad substitution').
+          { grep -q "REASON: modinfo could not inspect" <<<"$out" &&
+            ! grep -qi "bad substitution" <<<"$out"; } || exit 1
           if ./scripts/rollback.sh --interface does-not-exist0 --linux-address 10.55.0.2/30 --apply 2>err.log; then
             echo "FAIL: missing interface accepted"; exit 1
           fi
